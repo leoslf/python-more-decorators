@@ -1,0 +1,48 @@
+name: Setup Poetry
+description: Setup Poetry
+inputs:
+  python-version:
+    required: true
+    default: "3.10"
+  poetry-version:
+    required: true
+    default: "1.7.1"
+  poetry-cache-dir:
+    required: true
+    default: .cache
+  poetry-data-dir:
+    required: true
+    default: .cache
+runs:
+  using: composite
+  steps:
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Run image
+      uses: abatilo/actions-poetry@v2
+      with:
+        poetry-version: ${{ inputs.poetry-version }}
+
+    - name: Set environment variables
+      run: |
+        echo "POETRY_CACHE_DIR=${{ inputs.poetry-cache-dir }}" >> $GITHUB_ENV
+        echo "POETRY_DATA_DIR=${{ inputs.poetry-data-dir }}" >> $GITHUB_ENV
+
+    - name: Cache poetry caches
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.POETRY_CACHE_DIR }}
+        key: poetry-cache-${{ runner.os }}-python${{ inputs.python-version }}-poetry${{ inputs.poetry-version }}
+
+    - name: Cache packages
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.POETRY_DATA_DIR }}
+        key: poetry-local-${{ runner.os }}-python${{ inputs.python-version }}-poetry${{ inputs.poetry-version }}-${{ hashFiles('poetry.lock') }}
+        restore-keys: |
+          poetry-local-${{ runner.os }}-python${{ inputs.python-version }}-poetry${{ inputs.poetry-version }}-${{ hashFiles('poetry.lock') }}
+          poetry-local-${{ runner.os }}-python${{ inputs.python-version }}-poetry${{ inputs.poetry-version }}
+          poetry-local-${{ runner.os }}-python${{ inputs.python-version }}
