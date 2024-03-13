@@ -1,0 +1,209 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+  workflow_dispatch:
+
+jobs:
+  ci:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+        poetry-version: ["1.7.1"]
+        os: ["ubuntu-22.04", "macos-latest", "windows-latest"]
+
+    timeout-minutes: 15
+    runs-on: ${{ matrix.os }}
+    env:
+      POETRY_DATA_DIR: .pypoetry
+      POETRY_CACHE_DIR: .cache
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run image
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: ${{ matrix.poetry-version }}
+
+      - name: Cache poetry caches
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.POETRY_CACHE_DIR }}
+          key: |
+            poetry-cache-${{ matrix.os }}-python${{ matrix.python-version }}-poetry${{ matrix.poetry-version }}
+
+      - name: Cache packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.POETRY_DATA_DIR }}
+          key: |
+            poetry-local-${{ matrix.os }}-python${{ matrix.python-version }}-poetry${{ matrix.poetry-version }}-${{ hashFiles('poetry.lock') }}
+            poetry-local-${{ matrix.os }}-python${{ matrix.python-version }}-poetry${{ matrix.poetry-version }}
+            poetry-local-${{ matrix.os }}-python${{ matrix.python-version }}
+
+      - name: Install the project dependencies
+        run: poetry install
+
+      - name: Linting
+        run: poetry run ruff check .
+
+      - name: Type checking
+        run: poetry run mypy more_decorators
+
+      - name: Run the automated tests
+        run: >-
+          poetry run pytest 
+          -s
+          --doctest-modules
+          --tb=long
+          --junit-xml=.output/unittest/${{ matrix.os }}-python${{ matrix.python-version }}-poetry${{ matrix.poetry-version }}.xml
+          --cov-report term-missing
+          --cov-report xml:.output/coverage/${{ matrix.os }}-python${{ matrix.python-version }}-poetry${{ matrix.poetry-version }}.xml
+          --cov=.
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.poetry-version }}
+          path: .output
+
+  sonarqube:
+    needs: ci
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+        poetry-version: ["1.7.1"]
+        os: ["ubuntu-22.04"]
+    runs-on: ${{ matrix.os }}
+    env:
+      POETRY_DATA_DIR: .pypoetry
+      POETRY_CACHE_DIR: .cache
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: .output
+          pattern: reports-*
+          merge-multiple: true
+
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run image
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: ${{ matrix.poetry-version }}
+
+      - name: Cache poetry caches
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.POETRY_CACHE_DIR }}
+          key: |
+            poetry-cache-${{ matrix.os }}-python${{ matrix.python-version }}-poetry${{ matrix.poetry-version }}
+
+      - name: Cache packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.POETRY_DATA_DIR }}
+          key: |
+            poetry-local-${{ matrix.os }}-python${{ matrix.python-version }}-poetry${{ matrix.poetry-version }}-${{ hashFiles('poetry.lock') }}
+            poetry-local-${{ matrix.os }}-python${{ matrix.python-version }}-poetry${{ matrix.poetry-version }}
+            poetry-local-${{ matrix.os }}-python${{ matrix.python-version }}
+
+      - name: Install the project dependencies
+        run: poetry install
+
+      - name: Merge xunit reports
+        run: |
+          shopt -s globstar
+          poetry run junitparser merge .output/unittest/**/*.xml .output/unittest/merged.xml
+
+      - name: Sonarqube Analysis
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+          SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # If you wish to fail your job when the Quality Gate is red, uncomment the
+      # following lines. This would typically be used to fail a deployment.
+      - uses: sonarsource/sonarqube-quality-gate-action@master
+        if: ${{ github.event_name != 'pull_request' }}
+        timeout-minutes: 5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  publish:
+    needs: sonarqube
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+        poetry-version: ["1.7.1"]
+        os: ["ubuntu-22.04"]
+    runs-on: ${{ matrix.os }}
+    env:
+      POETRY_DATA_DIR: .pypoetry
+      POETRY_CACHE_DIR: .cache
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run image
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: ${{ matrix.poetry-version }}
+
+      - name: Cache poetry caches
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.POETRY_CACHE_DIR }}
+          key: |
+            poetry-cache-${{ matrix.os }}-python${{ matrix.python-version }}-poetry${{ matrix.poetry-version }}
+
+      - name: Cache packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.POETRY_DATA_DIR }}
+          key: |
+            poetry-local-${{ matrix.os }}-python${{ matrix.python-version }}-poetry${{ matrix.poetry-version }}-${{ hashFiles('poetry.lock') }}
+            poetry-local-${{ matrix.os }}-python${{ matrix.python-version }}-poetry${{ matrix.poetry-version }}
+            poetry-local-${{ matrix.os }}-python${{ matrix.python-version }}
+
+      - name: Install the project dependencies
+        run: poetry install
+
+      - name: semantic-poetry
+        uses: matteo4diani/poetry-semantic-release@v0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pypi-token: ${{ secrets.PYPI_TOKEN }}
+          python-version: ${{ env.PYTHON_VERSION }}

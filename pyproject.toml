@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "more-decorators"
+version = "0.1.0"
+description = "Python decorators library"
+authors = ["Leo Sin <leo.sin@my.cityu.edu.hk>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.1.1"
+pytest-cov = "^4.1.0"
+pytest-mock = "^3.12.0"
+freezegun = "^1.4.0"
+ruff = "^0.3.2"
+mypy = "^1.9.0"
+junitparser = "^3.1.2"
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:tool.poetry.version"]
+branch = "main"
+upload_to_PyPI = true
+upload_to_release = true
+build_command = "poetry build"
+commit_author = "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+
+[tool.semantic_release.commit_parser_options]
+allowed_tags = [
+    "build",
+    "chore",
+    "ci",
+    "docs",
+    "feat",
+    "fix",
+    "perf",
+    "style",
+    "refactor",
+    "test"
+]
+minor_tags = ["feat"]
+patch_tags = ["fix", "perf"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[virtualenvs]
+create = true
+in-project = true
+
