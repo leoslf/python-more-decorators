@@ -13,6 +13,9 @@ inputs:
   poetry-data-dir:
     required: true
     default: .cache
+  shell:
+    required: true
+    default: bash
 runs:
   using: composite
   steps:
@@ -27,6 +30,7 @@ runs:
         poetry-version: ${{ inputs.poetry-version }}
 
     - name: Set environment variables
+      shell: ${{ inputs.shell }}
       run: |
         echo "POETRY_CACHE_DIR=${{ inputs.poetry-cache-dir }}" >> $GITHUB_ENV
         echo "POETRY_DATA_DIR=${{ inputs.poetry-data-dir }}" >> $GITHUB_ENV
