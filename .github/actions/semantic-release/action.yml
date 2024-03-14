@@ -17,7 +17,7 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
       run: |
-        if semantic-release --noop --strict version; then
+        if poetry run semantic-release --noop --strict version; then
           echo "Releasing new version." 1>&2
         else
           echo "Skipping release steps." 1>&2
