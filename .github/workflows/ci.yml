@@ -167,4 +167,3 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           pypi-token: ${{ secrets.PYPI_TOKEN }}
           python-version: ${{ env.PYTHON_VERSION }}
-
