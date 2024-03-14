@@ -310,6 +310,17 @@ files = [
 ]
 
 [[package]]
+name = "semantic-release"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = ">=3.6,<4.0"
+files = [
+    {file = "semantic-release-0.1.0.tar.gz", hash = "sha256:943c4d2f5bf2f42958c1868f3c5ccabfcade6017d9d7562192d24053fb2c8efa"},
+    {file = "semantic_release-0.1.0-py3-none-any.whl", hash = "sha256:ac7bbd0aaf3bad04d812fae2979386388c9c9a1af489ed97f3fdbaa24eef2a2b"},
+]
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -345,4 +356,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "7e6fe6bdfe64efd57f91a8f5336b739e6468b929a055dc9a1297446c72444d82"
+content-hash = "d08aa0388539d4ebdee02be41943d573ed23ff594667d3be6888d43075e9c26a"

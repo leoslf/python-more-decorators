@@ -163,7 +163,7 @@ jobs:
         uses: ./.github/actions/setup-poetry
 
       - name: Install the project dependencies
-        run: poetry install
+        run: poetry install --with=release
 
       - name: Semantic Release
         uses: ./.github/actions/semantic-release
