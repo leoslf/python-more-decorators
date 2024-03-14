@@ -9,13 +9,13 @@ inputs:
     default: "1.7.1"
   pip-cache-dir:
     required: true
-    default: ${{ env.HOME }}/.cache/pip
+    default: ~/.cache/pip
   poetry-cache-dir:
     required: true
-    default: ${{ env.HOME }}/.cache/pypoetry
+    default: ~/.cache/pypoetry
   poetry-home:
     required: true
-    default: ${{ env.HOME }}/.local/share/pypoetry
+    default: ~/.local/share/pypoetry
   shell:
     required: true
     default: bash
@@ -60,7 +60,7 @@ runs:
           poetry-local-${{ runner.os }}-python${{ inputs.python-version }}
 
     - name: Setup python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
 
