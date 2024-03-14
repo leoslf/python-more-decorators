@@ -12,7 +12,7 @@ inputs:
     default: .cache
   poetry-data-dir:
     required: true
-    default: .cache
+    default: .pypoetry
   shell:
     required: true
     default: bash
