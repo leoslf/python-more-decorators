@@ -32,6 +32,8 @@ runs:
     - name: Set environment variables
       shell: ${{ inputs.shell }}
       run: |
+        echo "PYTHON_VERSION=${{ inputs.python-version }}" >> $GITHUB_ENV
+        echo "POETRY_VERSION=${{ inputs.poetry-veresion }}" >> $GITHUB_ENV
         echo "POETRY_CACHE_DIR=${{ inputs.poetry-cache-dir }}" >> $GITHUB_ENV
         echo "POETRY_DATA_DIR=${{ inputs.poetry-data-dir }}" >> $GITHUB_ENV
 
