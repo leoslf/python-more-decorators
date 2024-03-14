@@ -9,13 +9,13 @@ inputs:
     default: "1.7.1"
   pip-cache-dir:
     required: true
-    default: ~/.cache/pip
+    default: ${{ env.HOME }}/.cache/pip
   poetry-cache-dir:
     required: true
-    default: ~/.cache/pypoetry
+    default: ${{ env.HOME }}/.cache/pypoetry
   poetry-home:
     required: true
-    default: ~/.local/share/pypoetry
+    default: ${{ env.HOME }}/.local/share/pypoetry
   shell:
     required: true
     default: bash
@@ -27,20 +27,27 @@ runs:
       run: |
         echo "PYTHON_VERSION=${{ inputs.python-version }}" >> $GITHUB_ENV
         echo "POETRY_VERSION=${{ inputs.poetry-version }}" >> $GITHUB_ENV
+        echo "PIP_CACHE_DIR=${{ inputs.pip-cache-dir }}" >> $GITHUB_ENV
         echo "POETRY_CACHE_DIR=${{ inputs.poetry-cache-dir }}" >> $GITHUB_ENV
         echo "POETRY_HOME=${{ inputs.poetry-home }}" >> $GITHUB_ENV
 
     - name: Cache pip caches
       uses: actions/cache@v3
       with:
-        path: ${{ env.POETRY_CACHE_DIR }}
+        path: ${{ env.PIP_CACHE_DIR }}
         key: pip-cache-${{ runner.os }}-python${{ inputs.python-version }}-poetry${{ inputs.poetry-version }}
+        restore-keys: |
+          pip-cache-${{ runner.os }}-python${{ inputs.python-version }}-poetry${{ inputs.poetry-version }}
+          pip-cache-${{ runner.os }}-python${{ inputs.python-version }}
 
     - name: Cache poetry caches
       uses: actions/cache@v3
       with:
         path: ${{ env.POETRY_CACHE_DIR }}
-        key: poetry-cache-${{ runner.os }}-python${{ inputs.python-version }}-poetry${{ inputs.poetry-version }}
+        key: poetry-cache-${{ runner.os }}-python${{ inputs.python-version }}-poetry${{ inputs.poetry-version }}-${{ hashFiles('poetry.lock') }}
+        restore-keys: |
+          poetry-cache-${{ runner.os }}-python${{ inputs.python-version }}-poetry${{ inputs.poetry-version }}-${{ hashFiles('poetry.lock') }}
+          poetry-cache-${{ runner.os }}-python${{ inputs.python-version }}-poetry${{ inputs.poetry-version }}
 
     - name: Cache packages
       uses: actions/cache@v3
