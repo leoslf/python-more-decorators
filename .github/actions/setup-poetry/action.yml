@@ -13,7 +13,7 @@ inputs:
   poetry-cache-dir:
     required: true
     default: ~/.cache/pypoetry
-  poetry-home:
+  poetry-data-dir:
     required: true
     default: ~/.local/share/pypoetry
   shell:
@@ -29,7 +29,7 @@ runs:
         echo "POETRY_VERSION=${{ inputs.poetry-version }}" >> $GITHUB_ENV
         echo "PIP_CACHE_DIR=${{ inputs.pip-cache-dir }}" >> $GITHUB_ENV
         echo "POETRY_CACHE_DIR=${{ inputs.poetry-cache-dir }}" >> $GITHUB_ENV
-        echo "POETRY_HOME=${{ inputs.poetry-home }}" >> $GITHUB_ENV
+        echo "POETRY_DATA_DIR=${{ inputs.poetry-data-dir }}" >> $GITHUB_ENV
 
     - name: Cache pip caches
       uses: actions/cache@v3
@@ -52,7 +52,7 @@ runs:
     - name: Cache packages
       uses: actions/cache@v3
       with:
-        path: ${{ env.POETRY_HOME }}
+        path: ${{ env.POETRY_DATA_DIR }}
         key: poetry-local-${{ runner.os }}-python${{ inputs.python-version }}-poetry${{ inputs.poetry-version }}-${{ hashFiles('poetry.lock') }}
         restore-keys: |
           poetry-local-${{ runner.os }}-python${{ inputs.python-version }}-poetry${{ inputs.poetry-version }}-${{ hashFiles('poetry.lock') }}
