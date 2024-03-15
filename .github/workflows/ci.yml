@@ -156,6 +156,7 @@ jobs:
     needs: sonarqube
     runs-on: ubuntu-22.04
     steps:
+      # NOTE: semantic-release requires tags
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -165,7 +166,19 @@ jobs:
         uses: ./.github/actions/setup-poetry
 
       - name: Install the project dependencies
-        run: poetry install --with=release
+        run: poetry install --with=release -E docs
+
+      - name: Build docs
+        run: poetry run make -C docs html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        with:
+          publish_branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/build/
+          force_orphan: true
 
       - name: Semantic Release
         uses: ./.github/actions/semantic-release
