@@ -1,0 +1,40 @@
+:py:mod:`more_decorators.runtime_defaults`
+==========================================
+
+.. py:module:: more_decorators.runtime_defaults
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   more_decorators.runtime_defaults.runtime_default
+   more_decorators.runtime_defaults.evaluate_runtime_defaults
+
+
+
+.. py:function:: runtime_default(default_factory: Callable[[], T]) -> T
+
+   Runtime-default argument declaration
+
+   Wraps the default_factory into a temporary wrapper and defer the evaluation to :func:`~evaluate_runtime_defaults`.
+
+   :param default_factory: A :abbr:`nullary (taking no arguments)` function to be lazily-evaluated upon function call to produce the desired default value.  Useful for mutable type defaults or immutable types involving side-effects (e.g. :func:`time.time`, :class:`datetime.datetime`).
+
+   :returns: The wrapper containing the default_factory to be evaluated, casted to type T to make type checker happy
+
+
+.. py:function:: evaluate_runtime_defaults(original_function: Callable[P, T]) -> Callable[P, T]
+
+   Evaluator of runtime-default arguments
+
+   :param original_function: The function to be decorated
+
+   :returns: The decorated function that will have its runtime-default arguments evaluated upon function call
+
+
