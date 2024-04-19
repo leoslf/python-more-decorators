@@ -30,7 +30,7 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
       run: |
-        semantic-release version
+        poetry run semantic-release version
         git fetch --tags
         for file in ./dist/**
           do gh release upload "${{ steps.release-status.outputs.tag }}" $file
