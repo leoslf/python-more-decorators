@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python More Decorators &mdash; Python  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="autoapi/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            Python
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Python More Decorators</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="python-more-decorators">
+<h1>Python More Decorators<a class="headerlink" href="#python-more-decorators" title="Link to this heading"></a></h1>
+<p>Python More Decorators is a handy library to simplify your code with a collection of useful decorators.</p>
+<ul class="simple">
+<li><p>Works with type checking (tested with <code class="docutils literal notranslate"><span class="pre">mypy</span></code>)</p></li>
+</ul>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<section id="pip">
+<h3>pip<a class="headerlink" href="#pip" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>python-more-decorators
+</pre></div>
+</div>
+</section>
+<section id="poetry">
+<h3>poetry<a class="headerlink" href="#poetry" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>add<span class="w"> </span>python-more-decorators
+</pre></div>
+</div>
+</section>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
+<section id="evaluate-runtime-default-arguments">
+<h3>Evaluate runtime-default arguments<a class="headerlink" href="#evaluate-runtime-default-arguments" title="Link to this heading"></a></h3>
+<p>Sometimes we are just tired of polluting the function arguments declaration with <code class="docutils literal notranslate"><span class="pre">None</span></code> as <code class="docutils literal notranslate"><span class="pre">argument:</span> <span class="pre">Optional[MutableType]</span> <span class="pre">=</span> <span class="pre">None</span></code>.
+Or, we have all been here: having <code class="docutils literal notranslate"><span class="pre">some_list_argument:</span> <span class="pre">list[T]</span> <span class="pre">=</span> <span class="pre">[]</span></code> or <code class="docutils literal notranslate"><span class="pre">now:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">time.time()</span></code> in arguments.</p>
+<p>The worst thing is that it still runs.</p>
+<p>We now have:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">more_decorators.runtime_defaults</span> <span class="kn">import</span> <span class="n">evaluate_runtime_defaults</span><span class="p">,</span> <span class="n">runtime_default</span>
+
+<span class="nd">@evaluate_runtime_defaults</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">now</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">runtime_default</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">)):</span> <span class="c1"># think of it like `now: float = time.time()`</span>
+                                                  <span class="c1"># but evaluated every time upon function call</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Unix Timestamp: </span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>…and more to come.</p>
+</section>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading"></a></h2>
+<p>This library is licensed under the MIT License. See the <a class="reference internal" href="#LICENSE"><span class="xref myst">LICENSE</span></a> file for details.</p>
+</section>
+<section id="development">
+<h2>Development<a class="headerlink" href="#development" title="Link to this heading"></a></h2>
+<p>See <a class="reference internal" href="#CONTRIBUTING.md"><span class="xref myst">CONTRIBUTING.md</span></a></p>
+</section>
+</section>
+<section id="table-of-content">
+<h1>Table of Content<a class="headerlink" href="#table-of-content" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/more_decorators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">more_decorators</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/more_decorators/index.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/more_decorators/runtime_defaults/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">more_decorators.runtime_defaults</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/more_decorators/runtime_defaults/index.html#module-contents">Module Contents</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="autoapi/more_decorators/runtime_defaults/index.html#functions">Functions</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="autoapi/more_decorators/runtime_defaults/index.html#more_decorators.runtime_defaults.runtime_default"><code class="docutils literal notranslate"><span class="pre">runtime_default</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="autoapi/more_decorators/runtime_defaults/index.html#more_decorators.runtime_defaults.evaluate_runtime_defaults"><code class="docutils literal notranslate"><span class="pre">evaluate_runtime_defaults</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="changelog">
+<h2>CHANGELOG<a class="headerlink" href="#changelog" title="Link to this heading"></a></h2>
+<section id="v0-1-0-2024-03-13">
+<h3>v0.1.0 (2024-03-13)<a class="headerlink" href="#v0-1-0-2024-03-13" title="Link to this heading"></a></h3>
+<section id="chore">
+<h4>Chore<a class="headerlink" href="#chore" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>chore: bump version (<a class="reference external" href="https://github.com/leoslf/python-more-decorators/commit/428de659cf70b0b60f922c012fb472d75b862470"><code class="docutils literal notranslate"><span class="pre">428de65</span></code></a>)</p></li>
+</ul>
+</section>
+<section id="feature">
+<h4>Feature<a class="headerlink" href="#feature" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>feat: runtime default (<a class="reference external" href="https://github.com/leoslf/python-more-decorators/commit/679d5beb79c9d807028dada3a63eb8d5e49adde8"><code class="docutils literal notranslate"><span class="pre">679d5be</span></code></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="v0-0-0-2024-03-13">
+<h3>v0.0.0 (2024-03-13)<a class="headerlink" href="#v0-0-0-2024-03-13" title="Link to this heading"></a></h3>
+<section id="id1">
+<h4>Chore<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>chore: initial check-in (<a class="reference external" href="https://github.com/leoslf/python-more-decorators/commit/c690d57553c5f4023e2ad55b821b8405bef04107"><code class="docutils literal notranslate"><span class="pre">c690d57</span></code></a>)</p></li>
+</ul>
+</section>
+</section>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="autoapi/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
